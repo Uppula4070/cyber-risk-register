@@ -1,0 +1,270 @@
+# Sample risk register for a FICTIONAL mid-size online lending company.
+# All estimates are illustrative, chosen to show how the tool works, not industry benchmarks.
+organization: Sample Co (fictional online lender)
+assessment_date: 2026-10-27
+currency: USD
+appetite:
+  max_residual_score: 9          # residual likelihood x impact above this needs a treatment decision
+  max_annual_loss_p90: 750000    # per risk: a 1-in-10 bad year should not cost more than this
+
+risks:
+  - id: R-01
+    title: Ransomware encrypts core lending platform
+    category: Operational resilience
+    owner: CTO
+    description: |
+      A criminal group gains access, typically through phishing or an unpatched internet-facing system,
+      and encrypts servers that run loan origination and servicing.
+    inherent: {likelihood: 4, impact: 5}
+    residual: {likelihood: 2, impact: 5}
+    controls:
+      - name: Immutable, offline backups with quarterly restore tests
+        status: implemented
+        nist_csf: [PR.DS-11, RC.RP-03]
+        iso27001: [A.8.13]
+      - name: EDR on all servers and laptops, 24x7 monitored
+        status: implemented
+        nist_csf: [DE.CM-09]
+        iso27001: [A.8.7, A.8.16]
+      - name: Incident response plan with ransomware playbook
+        status: partial
+        nist_csf: [RS.MA-01]
+        iso27001: [A.5.24, A.5.26]
+    fair:
+      frequency: [0.02, 0.08, 0.3]
+      magnitude: [400000, 1800000, 7000000]
+    treatment:
+      strategy: mitigate
+      plan: Finish the ransomware playbook, run a tabletop exercise, and segment backup infrastructure from the corporate domain.
+      owner: Head of Infrastructure
+      due: 2027-02-28
+      cost: 60000
+      after:
+        frequency: [0.01, 0.05, 0.2]
+        magnitude: [250000, 1000000, 4000000]
+    review_date: 2027-01-31
+
+  - id: R-02
+    title: Business email compromise leads to fraudulent wire payment
+    category: Fraud
+    owner: CFO
+    inherent: {likelihood: 4, impact: 4}
+    residual: {likelihood: 3, impact: 3}
+    controls:
+      - name: Call-back verification for new or changed payee bank details
+        status: partial
+        nist_csf: [PR.AT-02]
+        iso27001: [A.6.3]
+      - name: Phishing-resistant MFA for finance mailboxes
+        status: implemented
+        nist_csf: [PR.AA-03]
+        iso27001: [A.8.5]
+    fair:
+      frequency: [0.1, 0.4, 1.2]
+      magnitude: [20000, 120000, 900000]
+    treatment:
+      strategy: mitigate
+      plan: Make call-back verification mandatory in the payments system (two-person approval over $10,000).
+      owner: Finance Operations
+      due: 2026-12-31
+      cost: 25000
+      after:
+        frequency: [0.05, 0.15, 0.5]
+        magnitude: [20000, 80000, 400000]
+    review_date: 2026-12-15
+
+  - id: R-03
+    title: Customer data exposed through misconfigured cloud storage
+    category: Data protection
+    owner: CISO
+    inherent: {likelihood: 3, impact: 5}
+    residual: {likelihood: 2, impact: 5}
+    controls:
+      - name: Cloud security posture management with public-bucket alerts
+        status: implemented
+        nist_csf: [PR.PS-01, DE.CM-09]
+        iso27001: [A.8.9]
+      - name: Policy-as-code checks block public storage in CI
+        status: planned
+        nist_csf: [PR.PS-01]
+        iso27001: [A.8.9, A.8.32]
+    fair:
+      frequency: [0.02, 0.1, 0.3]
+      magnitude: [150000, 900000, 5000000]
+    treatment:
+      strategy: mitigate
+      plan: Enforce policy-as-code in the deployment pipeline so public storage cannot be created.
+      owner: Cloud Platform team
+      due: 2027-01-31
+      cost: 30000
+      after:
+        frequency: [0.005, 0.03, 0.1]
+        magnitude: [150000, 900000, 5000000]
+    review_date: 2027-01-31
+
+  - id: R-04
+    title: Exploitation of an unpatched internet-facing vulnerability
+    category: Vulnerability management
+    owner: CISO
+    inherent: {likelihood: 4, impact: 4}
+    residual: {likelihood: 3, impact: 4}
+    controls:
+      - name: Weekly external scanning with SLA-tracked remediation
+        status: implemented
+        nist_csf: [ID.RA-01, PR.PS-02]
+        iso27001: [A.8.8]
+      - name: Emergency patch process for CISA KEV-listed vulnerabilities
+        status: partial
+        nist_csf: [ID.RA-08]
+        iso27001: [A.8.8]
+    fair:
+      frequency: [0.1, 0.3, 0.8]
+      magnitude: [50000, 300000, 2000000]
+    treatment:
+      strategy: mitigate
+      plan: Make KEV-listed findings a 7-day SLA with executive escalation, tracked on the remediation dashboard.
+      owner: Vulnerability Management
+      due: 2026-12-31
+      cost: 40000
+      after:
+        frequency: [0.05, 0.15, 0.4]
+        magnitude: [50000, 250000, 1500000]
+    review_date: 2026-11-30
+
+  - id: R-05
+    title: Broken access control in customer API exposes other customers' loans
+    category: Application security
+    owner: VP Engineering
+    inherent: {likelihood: 3, impact: 4}
+    residual: {likelihood: 2, impact: 4}
+    controls:
+      - name: Annual third-party penetration test of customer API
+        status: implemented
+        nist_csf: [ID.RA-01]
+        iso27001: [A.8.29]
+      - name: Authorization checks covered by automated tests
+        status: partial
+        nist_csf: [PR.PS-06]
+        iso27001: [A.8.28, A.8.29]
+    fair:
+      frequency: [0.03, 0.1, 0.3]
+      magnitude: [80000, 500000, 2500000]
+    review_date: 2027-03-31
+
+  - id: R-06
+    title: Breach at a third-party loan servicing vendor
+    category: Third-party risk
+    owner: Chief Risk Officer
+    inherent: {likelihood: 3, impact: 4}
+    residual: {likelihood: 3, impact: 4}
+    controls:
+      - name: Vendor security questionnaires at onboarding
+        status: implemented
+        nist_csf: [GV.SC-07]
+        iso27001: [A.5.19, A.5.21]
+      - name: Contractual breach notification within 72 hours
+        status: implemented
+        nist_csf: [GV.SC-05]
+        iso27001: [A.5.20]
+    fair:
+      frequency: [0.05, 0.15, 0.5]
+      magnitude: [100000, 600000, 3000000]
+    treatment:
+      strategy: transfer
+      plan: Add a cyber insurance rider covering vendor-caused breaches and require SOC 2 Type II reports annually.
+      owner: Chief Risk Officer
+      due: 2027-03-31
+      cost: 45000
+      after:
+        frequency: [0.05, 0.15, 0.5]
+        magnitude: [50000, 250000, 1000000]
+    review_date: 2026-10-01
+
+  - id: R-07
+    title: Insider copies customer data before leaving
+    category: Data protection
+    owner: CISO
+    inherent: {likelihood: 2, impact: 4}
+    residual: {likelihood: 2, impact: 3}
+    controls:
+      - name: Quarterly access reviews and least privilege for data stores
+        status: implemented
+        nist_csf: [PR.AA-05]
+        iso27001: [A.5.15, A.5.18, A.8.2]
+      - name: Data loss prevention on email and endpoints
+        status: partial
+        nist_csf: [PR.DS-01]
+        iso27001: [A.8.12]
+    fair:
+      frequency: [0.05, 0.2, 0.5]
+      magnitude: [20000, 150000, 800000]
+    review_date: 2027-04-30
+
+  - id: R-08
+    title: DDoS attack takes the loan application site offline
+    category: Operational resilience
+    owner: CTO
+    inherent: {likelihood: 3, impact: 3}
+    residual: {likelihood: 2, impact: 2}
+    controls:
+      - name: CDN with DDoS protection and rate limiting
+        status: implemented
+        nist_csf: [PR.IR-04]
+        iso27001: [A.8.20]
+    fair:
+      frequency: [0.2, 0.5, 1.5]
+      magnitude: [5000, 30000, 200000]
+    treatment:
+      strategy: accept
+      plan: Current exposure is within appetite. Accepted by the CTO; revisit if the business moves to 24x7 instant decisions.
+      owner: CTO
+    review_date: 2027-04-30
+
+  - id: R-09
+    title: Lost or stolen laptop with customer data
+    category: Endpoint security
+    owner: IT Director
+    inherent: {likelihood: 4, impact: 3}
+    residual: {likelihood: 3, impact: 1}
+    controls:
+      - name: Full-disk encryption enforced by device management
+        status: implemented
+        nist_csf: [PR.DS-01]
+        iso27001: [A.8.1, A.8.24]
+      - name: Remote wipe through device management
+        status: implemented
+        nist_csf: [PR.PS-01]
+        iso27001: [A.8.1]
+    fair:
+      frequency: [1, 3, 6]
+      magnitude: [1500, 3000, 12000]
+    review_date: 2027-06-30
+
+  - id: R-10
+    title: Credential stuffing takes over customer accounts
+    category: Fraud
+    owner: VP Engineering
+    inherent: {likelihood: 4, impact: 3}
+    residual: {likelihood: 3, impact: 3}
+    controls:
+      - name: Bot detection and login rate limiting
+        status: implemented
+        nist_csf: [DE.CM-01]
+        iso27001: [A.8.16, A.8.20]
+      - name: Optional MFA for customers
+        status: partial
+        nist_csf: [PR.AA-03]
+        iso27001: [A.8.5]
+    fair:
+      frequency: [0.5, 2, 6]
+      magnitude: [3000, 15000, 80000]
+    treatment:
+      strategy: mitigate
+      plan: Make MFA mandatory before changing payout bank details, and check passwords against breached-password lists.
+      owner: Identity team
+      due: 2027-01-31
+      cost: 35000
+      after:
+        frequency: [0.2, 0.6, 2]
+        magnitude: [3000, 12000, 60000]
+    review_date: 2027-01-31
